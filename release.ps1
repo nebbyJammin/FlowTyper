@@ -1,0 +1,2 @@
+dotnet publish Flow.Launcher.Plugin.FlowTyper -c Release -r win-x64 --no-self-contained
+Compress-Archive -LiteralPath Flow.Launcher.Plugin.FlowTyper/bin/Release/win-x64/publish -DestinationPath Flow.Launcher.Plugin.FlowTyper/bin/FlowTyper.zip -Force
