@@ -35,7 +35,9 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public WordList WordsList {get; private set;}
         public WordLists listOfWordsLists {get; init; }
         public double WPM {get; private set;}
+        public double RawWPM {get; private set;}
         public int CorrectCharacters {get; private set;}
+        public int CharactersTyped {get; private set;}
         public DateTime TestStart {get; set;}
         public DateTime LastTimeToType {get; set;}
 
@@ -58,13 +60,10 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         private FileInfo getWordListJSON(string wordListName) {
             return new FileInfo(WORDLIST_PATH + wordListName + ".json");
         }
-
-        public void UpdateStatistics() {
-            UpdateStatistics(0);
-        }
-
-        public void UpdateStatistics(int correctChars) {
+        
+        public void UpdateStatistics(int charsTyped = 0, int correctChars = 0) {
             CorrectCharacters += correctChars;
+            CharactersTyped += charsTyped;
 
             TimeSpan span = DateTime.Now - TestStart;
             TimeSpan lastTypeSpan = DateTime.Now - LastTimeToType;
@@ -73,16 +72,20 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
                 TestStart = DateTime.Now;
                 ForceResetTestStartTime = false;
                 CorrectCharacters = 0;
+                CharactersTyped = 0;
             }
             else if (span.TotalMinutes > 0) {
-                WPM = CorrectCharacters / 5f / span.TotalMinutes;
+                WPM = CorrectCharacters / 5.0 / span.TotalMinutes;
+                RawWPM = CharactersTyped / 5.0 / span.TotalMinutes;
             }
         }
 
         public void EndTest() {
             ForceResetTestStartTime = true;
             CorrectCharacters = 0;
+            CharactersTyped = 0;
             WPM = 0;
+            RawWPM = 0;
         }
 
         public void UpdateLastTimeToType() {
@@ -100,7 +103,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
                 }
             }
             // Space character counts as a character, so 1 more than the number of correct chars.
-            UpdateStatistics(numCorrect + 1);
+            UpdateStatistics(userInputtedWord.Length + 1, numCorrect + 1);
             dequeueWord();
         }
 

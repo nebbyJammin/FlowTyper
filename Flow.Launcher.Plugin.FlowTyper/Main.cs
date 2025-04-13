@@ -156,6 +156,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
             Result wpm = new Result();
             wpm.Title = "WPM: " + _typingManager.WPM;
+            wpm.SubTitle = "Raw WPM: " + _typingManager.RawWPM;
             wpm.Score = -1;
             results.Add(wpm);
 
