@@ -1,0 +1,16 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <!--  Startup  -->
+    <system:String x:Key="flowTyperTitle">Flow Typer</system:String>
+    <system:String x:Key="flowTyperDescription">Typing tests built into flow launcher</system:String>
+    <system:String x:Key="flowTyperChangeTestTitle">type</system:String>
+    <system:String x:Key="flowTyperChangeTestSubtitle">Start typing test</system:String>
+    <system:String x:Key="flowTyperExitTestMode">Press Enter to exit typing test</system:String>
+    <system:String x:Key="flowTyperReturnToMainTitle">main</system:String>
+    <system:String x:Key="flowTyperReturnToMainSubtitle">Return to Main</system:String>
+    <system:String x:Key="flowTyperSettingsTitle">settings</system:String>
+    <system:String x:Key="flowTyperSettingsSubtitle">Edit Flow Typer Settings</system:String>
+
+</ResourceDictionary>
