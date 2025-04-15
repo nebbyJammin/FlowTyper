@@ -8,8 +8,8 @@ using System.Windows.Media.Effects;
 
 namespace Flow.Launcher.Plugin.FlowTyper.Typer {
     public class TypingManager {
-        private const string WORDLIST_PATH = Constants.PLUGIN_DIR + "Static/Wordlists/";
-        private const string LIST_OF_WORDLISTS_PATH = WORDLIST_PATH + "_wordlists.json";
+        private static readonly string WORDLIST_PATH = Constants.PLUGIN_DIR + @"Static\Wordlists\";
+        private static readonly string LIST_OF_WORDLISTS_PATH = WORDLIST_PATH + @"_wordlists.json";
         private const int WORD_QUEUE_LENGTH = 40;
         private const double TEST_TIMEOUT_LENGTH = 5;
         private Queue<string> wordQueue;
@@ -40,16 +40,21 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public int CharactersTyped {get; private set;}
         public DateTime TestStart {get; set;}
         public DateTime LastTimeToType {get; set;}
-
         public bool ForceResetTestStartTime {get; set;}
-    
+
+        public string path; 
+        public bool pathExists = true;
         public TypingManager() {
-            FileInfo file = new FileInfo(LIST_OF_WORDLISTS_PATH);
-            using (StreamReader reader = new StreamReader(file.FullName)) {
+            path = LIST_OF_WORDLISTS_PATH;
+            FileStream file = new FileStream(LIST_OF_WORDLISTS_PATH, FileMode.Open);
+            pathExists = File.Exists(LIST_OF_WORDLISTS_PATH);
+            using (StreamReader reader = new StreamReader(file))
+            {
                 string Json = reader.ReadToEnd();
 
-                listOfWordsLists = JsonSerializer.Deserialize<WordLists>(Json); 
+                listOfWordsLists = JsonSerializer.Deserialize<WordLists>(Json);
             }
+
 
             TestStart = DateTime.Now; 
 
@@ -57,8 +62,8 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             LoadWordList();
         }
 
-        private FileInfo getWordListJSON(string wordListName) {
-            return new FileInfo(WORDLIST_PATH + wordListName + ".json");
+        private FileStream getWordListJSON(string wordListName) {
+            return new FileStream(WORDLIST_PATH + wordListName + ".json", FileMode.Open);
         }
         
         public void UpdateStatistics(int charsTyped = 0, int correctChars = 0) {
@@ -126,9 +131,9 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         }
 
         public bool LoadWordList() {
-            FileInfo file = getWordListJSON("english");
+            FileStream file = getWordListJSON("english");
 
-            using (StreamReader reader = new StreamReader(file.FullName))  {
+            using (StreamReader reader = new StreamReader(file))  {
                 string json = reader.ReadToEnd();
 
                 // TODO: We may consider changing this to asynchronous...

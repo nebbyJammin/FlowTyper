@@ -1,12 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.Pkcs;
-using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.FlowTyper.Typer;
-using JetBrains.Annotations;
 
 namespace Flow.Launcher.Plugin.FlowTyper
 {
@@ -125,6 +118,14 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
         public List<Result> HandleTypingQuery(Query query) {
             List<Result> results = new List<Result>();
+            
+            //// Debugging
+            // results.Add(new Result() {
+            //     Title = _typingManager?.path,
+            //     SubTitle = _typingManager?.pathExists.ToString(),
+            // });
+            // return results;
+            // End Debugging
 
             // Update last time to type
             _typingManager.UpdateStatistics();
