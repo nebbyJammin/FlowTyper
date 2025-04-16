@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Plugin.FlowTyper.Typer;
+using Flow.Launcher.Plugin.FlowTyper.Utils;
 
 namespace Flow.Launcher.Plugin.FlowTyper
 {
@@ -71,7 +72,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
         }
 
         private Result GetTestModeResult(Query query) {
-            Result startTestResult = new Result();
+            Result startTestResult = new TyperResult();
             startTestResult.Title = _context.API.GetTranslation("flowTyperChangeTestTitle");
             startTestResult.SubTitle = _context.API.GetTranslation("flowTyperChangeTestSubtitle");
             startTestResult.Action = (ActionContext context) =>
@@ -86,7 +87,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
         }
 
         private Result GetMainModeResult(Query query) {
-            Result returnMainResult = new Result();
+            Result returnMainResult = new TyperResult();
             returnMainResult.Title = _context.API.GetTranslation("flowTyperReturnToMainTitle");
             returnMainResult.SubTitle = _context.API.GetTranslation("flowTyperReturnToMainSubtitle");
             returnMainResult.Action = (ActionContext context) =>
@@ -101,7 +102,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
         }
 
         private Result GetSettingsModeResult(Query query) {
-            Result settingsResult = new Result();
+            Result settingsResult = new TyperResult();
             settingsResult.Title = _context.API.GetTranslation("flowTyperSettingsTitle");
             settingsResult.SubTitle = _context.API.GetTranslation("flowTyperSettingsSubtitle");
             settingsResult.Action = (ActionContext context) => {
@@ -149,8 +150,18 @@ namespace Flow.Launcher.Plugin.FlowTyper
                 ResetQuery(query, whitespace: TEST_WHITESPACE_PADDING + 1, suffix: leftOver);
             }
 
-            Result typingTest = new Result();
-            typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING) + _typingManager.CurrentWordsString;
+            Result typingTest = new TyperResult();
+            if (searchTerms.Length > 0) {
+                string nextWordLeftOver = _typingManager.NextWord.Substring(Math.Min(searchTerms[0].Length, _typingManager.NextWord.Length)) + " ";
+
+                typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING)
+                                + searchTerms[0] + nextWordLeftOver
+                                + _typingManager.CurrentWordsExceptFirstString;
+            }
+            else {
+                typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING)
+                                + _typingManager.CurrentWordsString;
+            }
             typingTest.SubTitle = _context.API.GetTranslation("flowTyperExitTestMode");
              
             typingTest.Action = (ActionContext context) =>
@@ -164,7 +175,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
             results.Add(typingTest);
 
-            Result wpm = new Result() {
+            Result wpm = new TyperResult() {
                 Title = $"WPM: {_typingManager.WPM:0.}",
                 SubTitle = $"Raw WPM: {_typingManager.RawWPM:0.}",
                 Score = -1,
@@ -172,7 +183,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
             results.Add(wpm);
 
-            Result accuracy = new Result() {
+            Result accuracy = new TyperResult() {
                 Title = $"Accuracy: {_typingManager.Accuracy:0.##}%",
                 Score = -2,
             };
@@ -187,7 +198,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
         public List<Result> HandleSettingsQuery(Query query) {
             List<Result> results = new List<Result>();
 
-            Result result = new Result();
+            Result result = new TyperResult();
             result.Title = "We are in settings mode now!";
             result.Score = int.MaxValue;
 

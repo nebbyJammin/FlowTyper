@@ -19,6 +19,12 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             }
         }
 
+        public string NextWord {
+            get {
+                return wordQueue.Peek();
+            }
+        }
+
         public string CurrentWordsString {
             get {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -27,6 +33,19 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
                     stringBuilder.Append(word);
                     stringBuilder.Append(" ");
                 } 
+
+                return stringBuilder.ToString();
+            }
+        }
+
+        public string CurrentWordsExceptFirstString {
+            get {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for (int i = 1; i < CurrentWords.Length; i++) {
+                    stringBuilder.Append(CurrentWords[i]);
+                    stringBuilder.Append(" ");
+                }
 
                 return stringBuilder.ToString();
             }
