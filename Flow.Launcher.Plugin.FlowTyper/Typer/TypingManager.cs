@@ -36,6 +36,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public WordLists listOfWordsLists {get; init; }
         public double WPM {get; private set;}
         public double RawWPM {get; private set;}
+        public double Accuracy {get; private set;}
         public int CorrectCharacters {get; private set;}
         public int CharactersTyped {get; private set;}
         public DateTime TestStart {get; set;}
@@ -79,9 +80,14 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
                 CorrectCharacters = 0;
                 CharactersTyped = 0;
             }
-            else if (span.TotalMinutes > 0) {
+
+            if (span.TotalMinutes > 0) {
                 WPM = CorrectCharacters / 5.0 / span.TotalMinutes;
                 RawWPM = CharactersTyped / 5.0 / span.TotalMinutes;
+            }
+
+            if (CharactersTyped > 0) {
+                Accuracy = (double) CorrectCharacters / CharactersTyped * 100;
             }
         }
 

@@ -1,12 +1,27 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Flow.Launcher.Plugin.FlowTyper.Typer;
 
 namespace Flow.Launcher.Plugin.FlowTyper
 {
+    /// <summary>
+    /// The entry point for the Flow Typer Plugin.
+    /// </summary>
     public class FlowTyper : IPlugin, IPluginI18n
     {
+        /// <summary>
+        /// Represents the state of the program.
+        /// </summary>
         public enum FlowTyperState {
-            MAIN,           // Main Execution
+            /// <summary>
+            /// The main menu state
+            /// </summary>
+            MAIN,
+            /// <summary>
+            /// The state that represents when the program is in a typing test
+            /// </summary>
             TYPING,
             SETTINGS
         }
@@ -16,13 +31,13 @@ namespace Flow.Launcher.Plugin.FlowTyper
         private const int TEST_WHITESPACE_PADDING = 5;
         private string previousTypingQuery = "";
 
-        public void Init(PluginInitContext context)
+        void IPlugin.Init(PluginInitContext context)
         {
             _context = context;
             _typingManager = new TypingManager();
         }
 
-        public List<Result> Query(Query query)
+        List<Result> IPlugin.Query(Query query)
         {
             List<Result> results = new List<Result>();
 
@@ -118,14 +133,6 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
         public List<Result> HandleTypingQuery(Query query) {
             List<Result> results = new List<Result>();
-            
-            //// Debugging
-            // results.Add(new Result() {
-            //     Title = _typingManager?.path,
-            //     SubTitle = _typingManager?.pathExists.ToString(),
-            // });
-            // return results;
-            // End Debugging
 
             // Update last time to type
             _typingManager.UpdateStatistics();
@@ -134,17 +141,19 @@ namespace Flow.Launcher.Plugin.FlowTyper
             // Checking if the user pressed space
             string[] searchTerms = query.SearchTerms;
 
-            if (previousTypingQuery != "" && searchTerms.Length >= 1 && searchTerms[searchTerms.Length - 1] == previousTypingQuery) {
+            if (previousTypingQuery != "" && searchTerms.Length >= 1 && searchTerms[searchTerms.Length - 1] == previousTypingQuery || searchTerms.Length >= 2) {
                 _typingManager.confirmWord(searchTerms[0]);
-                // TODO: Sometimes, if you type too fast, you can lose some of the searchterms beyond the first.
-                ResetQuery(query, whitespace: TEST_WHITESPACE_PADDING + 1);
+
+                string leftOver = "";
+                if (searchTerms.Length >= 2) leftOver = searchTerms[1];
+                ResetQuery(query, whitespace: TEST_WHITESPACE_PADDING + 1, suffix: leftOver);
             }
 
-            Result result = new Result();
-            result.Title = new string(' ', TEST_WHITESPACE_PADDING) + _typingManager.CurrentWordsString;
-            result.SubTitle = _context.API.GetTranslation("flowTyperExitTestMode");
+            Result typingTest = new Result();
+            typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING) + _typingManager.CurrentWordsString;
+            typingTest.SubTitle = _context.API.GetTranslation("flowTyperExitTestMode");
              
-            result.Action = (ActionContext context) =>
+            typingTest.Action = (ActionContext context) =>
             {
                 state = FlowTyperState.MAIN;
                 _typingManager.EndTest();
@@ -153,13 +162,22 @@ namespace Flow.Launcher.Plugin.FlowTyper
                 return false;
             };
 
-            results.Add(result);
+            results.Add(typingTest);
 
-            Result wpm = new Result();
-            wpm.Title = "WPM: " + _typingManager.WPM;
-            wpm.SubTitle = "Raw WPM: " + _typingManager.RawWPM;
-            wpm.Score = -1;
+            Result wpm = new Result() {
+                Title = $"WPM: {_typingManager.WPM:0.}",
+                SubTitle = $"Raw WPM: {_typingManager.RawWPM:0.}",
+                Score = -1,
+            };
+
             results.Add(wpm);
+
+            Result accuracy = new Result() {
+                Title = $"Accuracy: {_typingManager.Accuracy:0.##}%",
+                Score = -2,
+            };
+
+            results.Add(accuracy);
 
             previousTypingQuery = searchTerms.Length >= 1 ? searchTerms[searchTerms.Length - 1] : "";
 
@@ -184,6 +202,5 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
             return results;
         }
-
     }
 }
