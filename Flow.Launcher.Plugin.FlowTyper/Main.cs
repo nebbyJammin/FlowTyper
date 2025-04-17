@@ -15,7 +15,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
     /// <summary>
     /// The entry point for the Flow Typer Plugin.
     /// </summary>
-    public class FlowTyper : IPlugin, IPluginI18n
+    public partial class FlowTyper : IPlugin, IPluginI18n
     {
         /// <summary>
         /// Represents the state of the program.
