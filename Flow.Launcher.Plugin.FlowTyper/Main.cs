@@ -1,9 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+using System.Linq.Expressions;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Plugin.FlowTyper.Typer;
 using Flow.Launcher.Plugin.FlowTyper.Utils;
+using JetBrains.Annotations;
 
 namespace Flow.Launcher.Plugin.FlowTyper
 {
@@ -24,18 +29,69 @@ namespace Flow.Launcher.Plugin.FlowTyper
             /// The state that represents when the program is in a typing test
             /// </summary>
             TYPING,
-            SETTINGS
+            SETTINGS,
+            ERROR
         }
         private FlowTyperState state = FlowTyperState.MAIN;
         private PluginInitContext _context;
+        private TypingConfig _config;
         private TypingManager _typingManager;
         private const int TEST_WHITESPACE_PADDING = 5;
         private string previousTypingQuery = "";
+        private Exception exception;
+
+        private void saveConfig() {
+            if (!Directory.Exists(Constants.CONFIG_DIR)) {
+                Directory.CreateDirectory(Constants.CONFIG_DIR);
+            }
+
+            string path = Constants.CONFIG_DIR + ".config.json";
+            string json = JsonSerializer.Serialize(_config);
+            File.WriteAllText(path, json);
+        }
+
+        private bool loadConfig() {
+            string path = Constants.CONFIG_DIR + ".config.json";
+            if (File.Exists(path)) {
+                try
+                {
+                    FileStream configFile = new FileStream(Constants.CONFIG_DIR + ".config.json", FileMode.Open);
+
+                    using (StreamReader reader = new StreamReader(configFile))
+                    {
+                        string json = reader.ReadToEnd();
+
+                        _config = JsonSerializer.Deserialize<TypingConfig>(json);
+                    }
+
+                    return true;
+                }
+                catch(Exception e)
+                {
+                    exception = e;
+                    return false;
+                }
+
+            }
+            else {
+                // If FileNotFound, create the file
+                _config = new TypingConfig();
+                saveConfig();
+
+                return true;
+            }
+        }
 
         void IPlugin.Init(PluginInitContext context)
         {
             _context = context;
             _typingManager = new TypingManager();
+            if(loadConfig()) {
+                state = FlowTyperState.MAIN;
+            }
+            else {
+                state = FlowTyperState.ERROR;
+            }
         }
 
         List<Result> IPlugin.Query(Query query)
@@ -52,6 +108,9 @@ namespace Flow.Launcher.Plugin.FlowTyper
                 case FlowTyperState.SETTINGS:
                     results = HandleSettingsQuery(query);
                     break;
+                case FlowTyperState.ERROR:
+                    results = HandleErrorQuery(query);
+                    break;
             }   
 
             return results;
@@ -64,6 +123,24 @@ namespace Flow.Launcher.Plugin.FlowTyper
         public string GetTranslatedPluginDescription()
         {
             return _context.API.GetTranslation("flowTyperDescription");
+        }
+
+        private List<Result> HandleErrorQuery(Query query) {
+            List<Result> results = new List<Result>() {
+                new Result() {
+                    Title = "Oops, something went wrong...",
+                    SubTitle = "If you think this is a bug please report this!",
+
+                },
+                new Result() {
+                    Title = "Click me to see the crash report!",
+                    Action = (ActionContext actionContext) => {
+                        throw exception;
+                    },
+                }
+            };
+
+            return results;
         }
 
         private void ResetQuery(Query query, string suffix = "", bool requery = true, int whitespace = 1) {
@@ -195,15 +272,67 @@ namespace Flow.Launcher.Plugin.FlowTyper
             return results;
         }
 
+        // TODO: Why are we getting an index out of bounds exceptinon??? Something to do with Action delegate
         public List<Result> HandleSettingsQuery(Query query) {
             List<Result> results = new List<Result>();
 
-            Result result = new TyperResult();
-            result.Title = "We are in settings mode now!";
-            result.Score = int.MaxValue;
+            string[] searchTerms = query.SearchTerms;
+            if (searchTerms.Length >= 1) {
+                if ("language".StartsWith(searchTerms[0])) {
+                    // Show language options
+                    string[] wordlists = _typingManager.listOfWordsLists.wordlists;
+                    for (int i = 0; i < wordlists.Length; i++) {
+                        if (searchTerms.Length == 1 || wordlists[i].StartsWith(searchTerms[1])) {
+                            String word = wordlists[i];
+                            results.Add(new TyperResult() {
+                                Title = $"language {wordlists[i]}",
+                                SubTitle = $"Current language is {_config.Language}",
+                                Action = (ActionContext actionContext) => {
+                                    _config.Language = word;
+                                    saveConfig();
+                                    ResetQuery(query, "language ");
 
-            results.Add(result);
+                                    return false;
+                                },
+                            });
+                        }
+                    }
+                }
+                results.Add(new TyperResult()
+                {
+                    Title = $"useOptimisticWordList (currently {_config.UseOptimisticWordList.ToString().ToLower()})",
+                    SubTitle = "When true, mistyped characters are shown over the true character.",
+                    Action = (ActionContext context) =>
+                    {
+                        _config.UseOptimisticWordList ^= true;
+                        saveConfig();
+                        ResetQuery(query);
 
+                        return false;
+                    }
+                });
+            }
+            else {
+                results.Add(new TyperResult() {
+                    Title = $"useOptimisticWordList (currently {_config.UseOptimisticWordList.ToString().ToLower()})",
+                    SubTitle = "When true, mistyped characters are shown over the true character.",
+                    Action = (ActionContext context) => {
+                        _config.UseOptimisticWordList ^= true;
+                        saveConfig();
+                        ResetQuery(query);
+
+                        return false;
+                    }
+                });
+                results.Add(new TyperResult() {
+                    Title = $"language <language>",
+                    SubTitle = "Specify the typing language",
+                    Action = (ActionContext context) => {
+                        ResetQuery(query, "language ");
+                        return false;
+                    }
+                });
+            }
             Result mainResult = GetMainModeResult(query);
             mainResult.Score = int.MinValue;
             results.Add(mainResult);

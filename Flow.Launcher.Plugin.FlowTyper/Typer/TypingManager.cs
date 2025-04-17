@@ -63,11 +63,9 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public bool ForceResetTestStartTime {get; set;}
 
         public string path; 
-        public bool pathExists = true;
         public TypingManager() {
             path = LIST_OF_WORDLISTS_PATH;
             FileStream file = new FileStream(LIST_OF_WORDLISTS_PATH, FileMode.Open);
-            pathExists = File.Exists(LIST_OF_WORDLISTS_PATH);
             using (StreamReader reader = new StreamReader(file))
             {
                 string Json = reader.ReadToEnd();
@@ -106,7 +104,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             }
 
             if (CharactersTyped > 0) {
-                Accuracy = (double) CorrectCharacters / CharactersTyped * 100;
+                Accuracy = ((double) CorrectCharacters) / CharactersTyped * 100;
             }
         }
 
