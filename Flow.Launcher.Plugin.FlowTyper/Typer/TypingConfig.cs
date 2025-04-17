@@ -1,13 +1,16 @@
 
-
 namespace Flow.Launcher.Plugin.FlowTyper.Typer {
-    public struct TypingConfig {
-        public bool UseOptimisticWordList = true;
-        public string Language = "english";
+    public class TypingConfig {
+        private bool _useOptimisticWordList = true;
+        private string _language = "english";
 
-        public TypingConfig()
-        {
-
+        public bool UseOptimisticWordList {
+            get { return _useOptimisticWordList; }
+            set { _useOptimisticWordList = value; }
+        }
+        public string Language {
+            get { return _language; }
+            set { _language = value; }
         }
     }
 }

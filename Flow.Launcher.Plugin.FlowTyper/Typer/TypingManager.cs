@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -61,10 +62,10 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public DateTime TestStart {get; set;}
         public DateTime LastTimeToType {get; set;}
         public bool ForceResetTestStartTime {get; set;}
+        public string ActiveWordListName {get; private set;}
+        public TypingManager(string language = "english") {
+            this.ActiveWordListName = language;
 
-        public string path; 
-        public TypingManager() {
-            path = LIST_OF_WORDLISTS_PATH;
             FileStream file = new FileStream(LIST_OF_WORDLISTS_PATH, FileMode.Open);
             using (StreamReader reader = new StreamReader(file))
             {
@@ -77,6 +78,11 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             TestStart = DateTime.Now; 
 
             random = new Random();
+            LoadWordList();
+        }
+
+        public void SetActiveWordList(string wordList) {
+            this.ActiveWordListName = wordList;
             LoadWordList();
         }
 
@@ -104,7 +110,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             }
 
             if (CharactersTyped > 0) {
-                Accuracy = ((double) CorrectCharacters) / CharactersTyped * 100;
+                Accuracy = (double) CorrectCharacters / CharactersTyped * 100;
             }
         }
 
@@ -154,12 +160,11 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         }
 
         public bool LoadWordList() {
-            FileStream file = getWordListJSON("english");
+            FileStream file = getWordListJSON(ActiveWordListName);
 
             using (StreamReader reader = new StreamReader(file))  {
                 string json = reader.ReadToEnd();
 
-                // TODO: We may consider changing this to asynchronous...
                 WordsList = JsonSerializer.Deserialize<WordList>(json);
             }
 

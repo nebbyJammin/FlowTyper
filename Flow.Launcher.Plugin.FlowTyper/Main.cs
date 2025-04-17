@@ -75,7 +75,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
             }
             else {
                 // If FileNotFound, create the file
-                _config = new TypingConfig();
+                _config = new();
                 saveConfig();
 
                 return true;
@@ -85,13 +85,14 @@ namespace Flow.Launcher.Plugin.FlowTyper
         void IPlugin.Init(PluginInitContext context)
         {
             _context = context;
-            _typingManager = new TypingManager();
             if(loadConfig()) {
                 state = FlowTyperState.MAIN;
             }
             else {
                 state = FlowTyperState.ERROR;
             }
+          
+            _typingManager = new TypingManager(_config.Language);
         }
 
         List<Result> IPlugin.Query(Query query)
@@ -228,7 +229,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
             }
 
             Result typingTest = new TyperResult();
-            if (searchTerms.Length > 0) {
+            if (searchTerms.Length > 0 && _config.UseOptimisticWordList) {
                 string nextWordLeftOver = _typingManager.NextWord.Substring(Math.Min(searchTerms[0].Length, _typingManager.NextWord.Length)) + " ";
 
                 typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING)
@@ -272,7 +273,6 @@ namespace Flow.Launcher.Plugin.FlowTyper
             return results;
         }
 
-        // TODO: Why are we getting an index out of bounds exceptinon??? Something to do with Action delegate
         public List<Result> HandleSettingsQuery(Query query) {
             List<Result> results = new List<Result>();
 
@@ -290,6 +290,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
                                 Action = (ActionContext actionContext) => {
                                     _config.Language = word;
                                     saveConfig();
+                                    _typingManager.SetActiveWordList(word);
                                     ResetQuery(query, "language ");
 
                                     return false;
