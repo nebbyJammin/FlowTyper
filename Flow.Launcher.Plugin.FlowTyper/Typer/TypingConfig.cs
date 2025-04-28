@@ -1,12 +1,12 @@
 
 namespace Flow.Launcher.Plugin.FlowTyper.Typer {
     public class TypingConfig {
-        private bool _useOptimisticWordList = true;
+        private bool _showIncorrectCharacters = true;
         private string _language = "english";
 
-        public bool UseOptimisticWordList {
-            get { return _useOptimisticWordList; }
-            set { _useOptimisticWordList = value; }
+        public bool ShowIncorrectCharacters {
+            get { return _showIncorrectCharacters; }
+            set { _showIncorrectCharacters = value; }
         }
         public string Language {
             get { return _language; }

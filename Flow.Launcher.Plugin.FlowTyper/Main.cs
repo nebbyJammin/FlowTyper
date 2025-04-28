@@ -229,7 +229,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
             }
 
             Result typingTest = new TyperResult();
-            if (searchTerms.Length > 0 && _config.UseOptimisticWordList) {
+            if (searchTerms.Length > 0 && _config.ShowIncorrectCharacters) {
                 string nextWordLeftOver = _typingManager.NextWord.Substring(Math.Min(searchTerms[0].Length, _typingManager.NextWord.Length)) + " ";
 
                 typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING)
@@ -301,11 +301,11 @@ namespace Flow.Launcher.Plugin.FlowTyper
                 }
                 results.Add(new TyperResult()
                 {
-                    Title = $"useOptimisticWordList (currently {_config.UseOptimisticWordList.ToString().ToLower()})",
+                    Title = $"showIncorrectCharacters (currently {_config.ShowIncorrectCharacters.ToString().ToLower()})",
                     SubTitle = "When true, mistyped characters are shown over the true character.",
                     Action = (ActionContext context) =>
                     {
-                        _config.UseOptimisticWordList ^= true;
+                        _config.ShowIncorrectCharacters ^= true;
                         saveConfig();
                         ResetQuery(query);
 
@@ -315,10 +315,10 @@ namespace Flow.Launcher.Plugin.FlowTyper
             }
             else {
                 results.Add(new TyperResult() {
-                    Title = $"useOptimisticWordList (currently {_config.UseOptimisticWordList.ToString().ToLower()})",
+                    Title = $"showIncorrectCharacters ({_config.ShowIncorrectCharacters.ToString().ToLower()})",
                     SubTitle = "When true, mistyped characters are shown over the true character.",
                     Action = (ActionContext context) => {
-                        _config.UseOptimisticWordList ^= true;
+                        _config.ShowIncorrectCharacters ^= true;
                         saveConfig();
                         ResetQuery(query);
 
@@ -327,7 +327,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
                 });
                 results.Add(new TyperResult() {
                     Title = $"language <language>",
-                    SubTitle = "Specify the typing language",
+                    SubTitle = $"Specify the typing language ({_config.Language})",
                     Action = (ActionContext context) => {
                         ResetQuery(query, "language ");
                         return false;
