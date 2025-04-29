@@ -2,9 +2,20 @@ using System;
 
 namespace Flow.Launcher.Plugin.FlowTyper {
     public static class Constants {
+        #region PATHS
         public const string PLUGIN_SUBDIR_NAME = @"FlowTyper\";
         public static readonly string PLUGIN_DIR = Environment.ExpandEnvironmentVariables(@"%AppData%\FlowLauncher\Plugins\" + PLUGIN_SUBDIR_NAME);
         public static readonly string CONFIG_DIR = PLUGIN_DIR + @".config\";
         public static readonly string IMAGES_DIR = PLUGIN_DIR + @"Images\";
+
+        #endregion
+
+        #region PLUGIN CONSTANTS
+        public const int NUMBERS_MIN = 0;
+        public const int NUMBERS_MAX = int.MaxValue;
+        public const int RATE_MIN = 0;
+        public const int RATE_MAX = 1;
+
+        #endregion
     }
 }

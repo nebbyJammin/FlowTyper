@@ -78,9 +78,9 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                     Title = $"capitaliseRate ({_config.CapitaliseRate})",
                     SubTitle = "The rate at which words are capitalised.",
                     Action = (ActionContext _) => {
-                        // TODO: How do I implement changing the value of this.
-                        saveConfig();
                         ResetQuery(query);
+                        changeFloatCallback = floatFieldHandlers["capitaliseRate"];
+                        state = FlowTyperState.SETTINGS_FLOAT_EDIT;
                         return false;
                     }
                 });

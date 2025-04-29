@@ -31,17 +31,18 @@ namespace Flow.Launcher.Plugin.FlowTyper
             TYPING,
             SETTINGS,
             SETTINGS_INT_EDIT,
+            SETTINGS_FLOAT_EDIT,
             ERROR
         }
         private FlowTyperState state = FlowTyperState.MAIN;
         private PluginInitContext _context;
-        private TypingConfig _config;
+        private static TypingConfig _config {get; set;}
         private TypingManager _typingManager;
         private const int TEST_WHITESPACE_PADDING = 5;
         private string previousTypingQuery = "";
         private Exception exception;
 
-        private void saveConfig() {
+        private static void saveConfig() {
             if (!Directory.Exists(Constants.CONFIG_DIR)) {
                 Directory.CreateDirectory(Constants.CONFIG_DIR);
             }
@@ -114,7 +115,10 @@ namespace Flow.Launcher.Plugin.FlowTyper
                     results = HandleErrorQuery(query);
                     break;
                 case FlowTyperState.SETTINGS_INT_EDIT:
-                    //results = HandleIntEditQuery(query);
+                    results = HandleIntEditQuery(query);
+                    break;
+                case FlowTyperState.SETTINGS_FLOAT_EDIT:
+                    results = HandleFloatEditQuery(query);
                     break;
             }   
 
