@@ -26,6 +26,10 @@ In main mode, to change settings, use `ft settings`. Alternatively, you can edit
 
 `Numbers` - `[true|false]` Randomly adds numbers.
 
+`NumbersMin` - `[int]` Smallest Number.
+
+`NumbersMax` - `[int]` Largest Number.
+
 `NumbersRate` - `[0-1]` Specifies the proportion of words that are numbers.
 
 `Capitalise` - `[true|false]` Randomly capitalises words.

@@ -30,6 +30,7 @@ namespace Flow.Launcher.Plugin.FlowTyper
             /// </summary>
             TYPING,
             SETTINGS,
+            SETTINGS_INT_EDIT,
             ERROR
         }
         private FlowTyperState state = FlowTyperState.MAIN;
@@ -112,6 +113,9 @@ namespace Flow.Launcher.Plugin.FlowTyper
                 case FlowTyperState.ERROR:
                     results = HandleErrorQuery(query);
                     break;
+                case FlowTyperState.SETTINGS_INT_EDIT:
+                    //results = HandleIntEditQuery(query);
+                    break;
             }   
 
             return results;
@@ -149,21 +153,6 @@ namespace Flow.Launcher.Plugin.FlowTyper
             _context.API.ReQuery(requery);
         }
 
-        private Result GetTestModeResult(Query query) {
-            Result startTestResult = new TyperResult();
-            startTestResult.Title = _context.API.GetTranslation("flowTyperChangeTestTitle");
-            startTestResult.SubTitle = _context.API.GetTranslation("flowTyperChangeTestSubtitle");
-            startTestResult.Action = (ActionContext context) =>
-            {
-                state = FlowTyperState.TYPING;
-                ResetQuery(query, whitespace: TEST_WHITESPACE_PADDING + 1);
-
-                return false;
-            };
-
-            return startTestResult;
-        }
-
         private Result GetMainModeResult(Query query) {
             Result returnMainResult = new TyperResult();
             returnMainResult.Title = _context.API.GetTranslation("flowTyperReturnToMainTitle");
@@ -179,169 +168,5 @@ namespace Flow.Launcher.Plugin.FlowTyper
             return returnMainResult;
         }
 
-        private Result GetSettingsModeResult(Query query) {
-            Result settingsResult = new TyperResult();
-            settingsResult.Title = _context.API.GetTranslation("flowTyperSettingsTitle");
-            settingsResult.SubTitle = _context.API.GetTranslation("flowTyperSettingsSubtitle");
-            settingsResult.Action = (ActionContext context) => {
-                state = FlowTyperState.SETTINGS;
-                ResetQuery(query);
-
-                return false;
-            };
-        
-            return settingsResult;
-        }
-
-        public List<Result> HandleMainQuery(Query query) {
-            List<Result> results = new List<Result>();      
-
-            Result testMode = GetTestModeResult(query);
-            testMode.Score = int.MaxValue;
-            if (testMode.Title.StartsWith(query.Search)) results.Add(testMode);
-            
-            Result settingsMode = GetSettingsModeResult(query);
-            settingsMode.Score = int.MinValue;
-            if (settingsMode.Title.StartsWith(query.Search)) results.Add(settingsMode);
-
-            // This is used to update the word list. Reset if we are not in typing mode
-            previousTypingQuery = "";
-
-            return results;
-        }
-
-        public List<Result> HandleTypingQuery(Query query) {
-            List<Result> results = new List<Result>();
-
-            // Update last time to type
-            _typingManager.UpdateStatistics();
-            _typingManager.UpdateLastTimeToType();
-
-            // Checking if the user pressed space
-            string[] searchTerms = query.SearchTerms;
-
-            if (previousTypingQuery != "" && searchTerms.Length >= 1 && searchTerms[searchTerms.Length - 1] == previousTypingQuery || searchTerms.Length >= 2) {
-                _typingManager.confirmWord(searchTerms[0]);
-
-                string leftOver = "";
-                if (searchTerms.Length >= 2) leftOver = searchTerms[1];
-                ResetQuery(query, whitespace: TEST_WHITESPACE_PADDING + 1, suffix: leftOver);
-            }
-
-            Result typingTest = new TyperResult();
-            if (searchTerms.Length > 0 && _config.ShowIncorrectCharacters) {
-                string nextWordLeftOver = _typingManager.NextWord.Substring(Math.Min(searchTerms[0].Length, _typingManager.NextWord.Length)) + " ";
-
-                typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING)
-                                + searchTerms[0] + nextWordLeftOver
-                                + _typingManager.CurrentWordsExceptFirstString;
-            }
-            else {
-                typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING)
-                                + _typingManager.CurrentWordsString;
-            }
-            typingTest.SubTitle = _context.API.GetTranslation("flowTyperExitTestMode");
-             
-            typingTest.Action = (ActionContext context) =>
-            {
-                state = FlowTyperState.MAIN;
-                _typingManager.EndTest();
-                ResetQuery(query);
-
-                return false;
-            };
-
-            results.Add(typingTest);
-
-            Result wpm = new TyperResult() {
-                Title = $"WPM: {_typingManager.WPM:0.}",
-                SubTitle = $"Raw WPM: {_typingManager.RawWPM:0.}",
-                Score = -1,
-            };
-
-            results.Add(wpm);
-
-            Result accuracy = new TyperResult() {
-                Title = $"Accuracy: {_typingManager.Accuracy:0.##}%",
-                Score = -2,
-            };
-
-            results.Add(accuracy);
-
-            previousTypingQuery = searchTerms.Length >= 1 ? searchTerms[searchTerms.Length - 1] : "";
-
-            return results;
-        }
-
-        public List<Result> HandleSettingsQuery(Query query) {
-            List<Result> results = new List<Result>();
-
-            string[] searchTerms = query.SearchTerms;
-            if (searchTerms.Length >= 1) {
-                if ("language".StartsWith(searchTerms[0])) {
-                    // Show language options
-                    string[] wordlists = _typingManager.listOfWordsLists.wordlists;
-                    for (int i = 0; i < wordlists.Length; i++) {
-                        if (searchTerms.Length == 1 || wordlists[i].StartsWith(searchTerms[1])) {
-                            String word = wordlists[i];
-                            results.Add(new TyperResult() {
-                                Title = $"language {wordlists[i]}",
-                                SubTitle = $"Current language is {_config.Language}",
-                                Action = (ActionContext actionContext) => {
-                                    _config.Language = word;
-                                    saveConfig();
-                                    _typingManager.SetActiveWordList(word);
-                                    ResetQuery(query, "language ");
-
-                                    return false;
-                                },
-                            });
-                        }
-                    }
-                }
-                results.Add(new TyperResult()
-                {
-                    Title = $"showIncorrectCharacters (currently {_config.ShowIncorrectCharacters.ToString().ToLower()})",
-                    SubTitle = "When true, mistyped characters are shown over the true character.",
-                    Action = (ActionContext context) =>
-                    {
-                        _config.ShowIncorrectCharacters ^= true;
-                        saveConfig();
-                        ResetQuery(query);
-
-                        return false;
-                    }
-                });
-            }
-            else {
-                results.Add(new TyperResult() {
-                    Title = $"showIncorrectCharacters ({_config.ShowIncorrectCharacters.ToString().ToLower()})",
-                    SubTitle = "When true, mistyped characters are shown over the true character.",
-                    Action = (ActionContext context) => {
-                        _config.ShowIncorrectCharacters ^= true;
-                        saveConfig();
-                        ResetQuery(query);
-
-                        return false;
-                    }
-                });
-                results.Add(new TyperResult() {
-                    Title = $"language <language>",
-                    SubTitle = $"Specify the typing language ({_config.Language})",
-                    Action = (ActionContext context) => {
-                        ResetQuery(query, "language ");
-                        return false;
-                    }
-                });
-            }
-            Result mainResult = GetMainModeResult(query);
-            mainResult.Score = int.MinValue;
-            results.Add(mainResult);
-
-            // This is used to update the word list. Reset if we are not in typing mode
-            previousTypingQuery = "";
-
-            return results;
-        }
     }
 }
