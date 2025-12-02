@@ -41,8 +41,6 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                                 Title = $"language {wordlists[i]}",
                                 SubTitle = $"Current language: {_config.Language}",
                                 Action = (ActionContext actionContext) => {
-                                    _config.Language = word;
-                                    saveConfig();
                                     _typingManager.SetActiveWordList(word);
                                     ResetQuery(query, "language ");
 

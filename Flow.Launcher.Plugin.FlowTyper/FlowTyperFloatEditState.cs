@@ -34,29 +34,22 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 )
             }
         };
-        Dictionary<FloatField, Func<float, bool>> floatFieldHandlers = new Dictionary<FloatField, Func<float, bool>>() {
-            { 
-                FloatField.CAPITALIZE_RATE, (float val) => {
-                    _config.CapitalizeRate = Math.Clamp(val, 0, 1);
-                    saveConfig();
-                    return true;
-                }
-            },
-            {
-                FloatField.PUNCTUATION_RATE, (float val) => {
-                    _config.PunctuationRate = Math.Clamp(val, 0, 1);
-                    saveConfig();
-                    return true;
-                }
-            },
-            {
-                FloatField.NUMBERS_RATE, (float val) => {
-                    _config.NumbersRate = Math.Clamp(val, 0, 1);
-                    saveConfig();
-                    return true;
-                }
+
+        // TODO: Handle error state better
+        private void updateParam(FloatField f, float val) {
+            switch (f) {
+                case FloatField.CAPITALIZE_RATE:
+                _config.CapitalizeRate = Math.Clamp(val, 0, 1);
+                break;
+                case FloatField.PUNCTUATION_RATE:
+                _config.PunctuationRate = Math.Clamp(val, 0, 1);
+                break;
+                case FloatField.NUMBERS_RATE:
+                _config.NumbersRate = Math.Clamp(val, 0, 1);
+                break;
             }
-        };
+            _config.SaveConfig();
+        }
         FloatField currFloatField = FloatField.NONE;
         private List<Result> HandleFloatEditQuery(Query query) {
             Tuple<string, string> translationKey = floatFieldTranslationKeys[currFloatField];
@@ -75,9 +68,13 @@ namespace Flow.Launcher.Plugin.FlowTyper {
 
                             string s = query.Search;
                             float val = float.Parse(s);
+
                             // TODO: Handle an error better. Shouldn't be an issue most the time though.
-                            Func<float, bool> callback = floatFieldHandlers[currFloatField];
-                            bool success = callback.Invoke(val);
+                            // Func<float, bool> callback = floatFieldHandlers[currFloatField];
+                            // bool success = callback.Invoke(val);
+
+                            updateParam(currFloatField, val);
+
                             ResetQuery(query);
                             state = FlowTyperState.SETTINGS;
                         }

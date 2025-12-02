@@ -1,14 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq.Expressions;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Flow.Launcher.Plugin.FlowTyper.Typer;
 using Flow.Launcher.Plugin.FlowTyper.Utils;
-using JetBrains.Annotations;
 
 namespace Flow.Launcher.Plugin.FlowTyper
 {
@@ -48,65 +41,37 @@ namespace Flow.Launcher.Plugin.FlowTyper
         }
         private FlowTyperState state = FlowTyperState.MAIN;
         private PluginInitContext _context;
-        private static TypingConfig _config {get; set;}
+        private TypingConfig _config {
+            get {
+                return _typingManager._conf;
+            } 
+        }
         private TypingManager _typingManager;
         private const int TEST_WHITESPACE_PADDING = 5;
         private string previousTypingQuery = "";
         private Exception exception;
 
-        private static void saveConfig() {
-            if (!Directory.Exists(Constants.CONFIG_DIR)) {
-                Directory.CreateDirectory(Constants.CONFIG_DIR);
-            }
-
-            string path = Constants.CONFIG_DIR + ".config.json";
-            string json = JsonSerializer.Serialize(_config);
-            File.WriteAllText(path, json);
-        }
-
-        private bool loadConfig() {
-            string path = Constants.CONFIG_DIR + ".config.json";
-            if (File.Exists(path)) {
-                try
-                {
-                    FileStream configFile = new FileStream(Constants.CONFIG_DIR + ".config.json", FileMode.Open);
-
-                    using (StreamReader reader = new StreamReader(configFile))
-                    {
-                        string json = reader.ReadToEnd();
-
-                        _config = JsonSerializer.Deserialize<TypingConfig>(json);
-                    }
-
-                    return true;
-                }
-                catch(Exception e)
-                {
-                    exception = e;
-                    return false;
-                }
-
-            }
-            else {
-                // If FileNotFound, create the file
-                _config = new();
-                saveConfig();
-
-                return true;
-            }
+        private void saveConfig() {
+            _typingManager._conf.SaveConfig();
         }
 
         void IPlugin.Init(PluginInitContext context)
         {
             _context = context;
-            if(loadConfig()) {
-                state = FlowTyperState.MAIN;
+            TypingConfig conf = null;
+            try {
+                conf = TypingConfig.LoadConfig();
+            } catch (Exception e) {
+                exception = e;
             }
-            else {
+
+            if(conf == null) {
                 state = FlowTyperState.ERROR;
             }
-          
-            _typingManager = new TypingManager(_config.Language);
+            else {
+                state = FlowTyperState.MAIN;
+                _typingManager = new TypingManager(conf);
+            }
         }
 
         List<Result> IPlugin.Query(Query query)

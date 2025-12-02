@@ -9,6 +9,7 @@ using System.Windows.Media.Effects;
 
 namespace Flow.Launcher.Plugin.FlowTyper.Typer {
     public class TypingManager {
+        public TypingConfig _conf {get; private set;}
         private static readonly string WORDLIST_PATH = Constants.PLUGIN_DIR + @"Static\Wordlists\";
         private static readonly string LIST_OF_WORDLISTS_PATH = WORDLIST_PATH + @"_wordlists.json";
         private const int WORD_QUEUE_LENGTH = 40;
@@ -63,9 +64,8 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public DateTime TestStart {get; private set;}
         public DateTime LastTimeToType {get; private set;}
         public bool ForceResetTestStartTime {get; private set;}
-        public string ActiveWordListName {get; private set;}
-        public TypingManager(string language = "english") {
-            this.ActiveWordListName = language;
+        public TypingManager(TypingConfig conf) {
+            this._conf = conf;
 
             FileStream file = new FileStream(LIST_OF_WORDLISTS_PATH, FileMode.Open);
             using (StreamReader reader = new StreamReader(file))
@@ -83,7 +83,8 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         }
 
         public void SetActiveWordList(string wordList) {
-            this.ActiveWordListName = wordList;
+            _conf.Language = wordList;
+            _conf.SaveConfig();
             LoadWordList();
         }
 
@@ -150,10 +151,17 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         }
 
         private void enqueueRandomWord() {
-            int max = WordsList.words.Length;
-            string word = WordsList.words[random.Next(max)];
+            // First check if the next word is a number or a "word"
+            if (random.NextDouble() <= _conf.NumbersRate) {
+                int randNum = random.Next(1000);
+                wordQueue.Enqueue(randNum.ToString());
+            } else {
+                // Check if we should do any punctuation
+                int max = WordsList.words.Length;
+                string word = WordsList.words[random.Next(max)];
 
-            wordQueue.Enqueue(word);
+                wordQueue.Enqueue(word);
+            }
         }
 
         public void PopulateWordQueue() {
@@ -164,7 +172,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         }
 
         public bool LoadWordList() {
-            FileStream file = getWordListJSON(ActiveWordListName);
+            FileStream file = getWordListJSON(this._conf.Language);
 
             using (StreamReader reader = new StreamReader(file))  {
                 string json = reader.ReadToEnd();
