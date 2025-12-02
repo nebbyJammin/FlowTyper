@@ -4,7 +4,7 @@
     "Name": "FlowTyper",
     "Description": "Quick and simple typing tests built into flow launcher",
     "Author": "nebbyJammin",
-    "Version": "1.0.0",
+    "Version": "1.0.1",
     "Language": "csharp",
     "Website": "https://github.com/nebbyJammin/Flow.Launcher.Plugin.FlowTyper",
     "IcoPath": "Images\\icon.png",
