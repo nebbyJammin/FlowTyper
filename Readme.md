@@ -9,6 +9,7 @@ GNU General Public License v3.0.
 
 The MonkeyType-derived files are:
 - Flow.Launcher.Plugin.FlowTyper/Static/Wordlists/...
+
 These files remain under the GPL-3.0 license and include the required copyright
 and license notices from the original project.
 
