@@ -3,6 +3,18 @@ using Flow.Launcher.Plugin.FlowTyper.Utils;
 
 namespace Flow.Launcher.Plugin.FlowTyper {
     public partial class FlowTyper {
+        private void SetSettingsEditState(Query q, FloatField f) {
+            ResetQuery(q);
+            currFloatField = f;
+            state = FlowTyperState.SETTINGS_FLOAT_EDIT;
+        }
+
+        private void SetSettingsEditState(Query q, IntField f) {
+            ResetQuery(q);
+            currIntField = f;
+            state = FlowTyperState.SETTINGS_INT_EDIT;
+        }
+
         public List<Result> HandleSettingsQuery(Query query) {
             List<Result> results = new List<Result>();
             List<Result> genericSettings = new List<Result>();
@@ -23,9 +35,9 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                     // Show language options
                     string[] wordlists = _typingManager.listOfWordsLists.wordlists;
                     for (int i = 0; i < wordlists.Length; i++) {
-                        if (searchTerms.Length == 1 || wordlists[i].StartsWith(searchTerms[1])) {
+                        if (searchTerms.Length == 1 || searchTerms.Length == 2 && wordlists[i].StartsWith(searchTerms[1])) {
                             string word = wordlists[i];
-                            results.Add(new TyperResult() {
+                            Result r = new TyperResult() {
                                 Title = $"language {wordlists[i]}",
                                 SubTitle = $"Current language: {_config.Language}",
                                 Action = (ActionContext actionContext) => {
@@ -36,7 +48,13 @@ namespace Flow.Launcher.Plugin.FlowTyper {
 
                                     return false;
                                 },
-                            });
+                            };
+
+                            if (searchTerms.Length == 2 && wordlists[i] == searchTerms[1]) {
+                                r.Score = 20000;
+                            }
+
+                            results.Add(r);
                         }
                     }
                 }
@@ -44,8 +62,8 @@ namespace Flow.Launcher.Plugin.FlowTyper {
             
             if (!hideGenericSettings) {
                 genericSettings.Add(new TyperResult() {
-                    Title = $"showIncorrectCharacters ({_config.ShowIncorrectCharacters.ToString().ToLower()})",
-                    SubTitle = "When true, mistyped characters are shown over the true character.",
+                    Title = $"{_context.API.GetTranslation("flowTyperParamsShowIncorrectCharactersTitle")} ({_config.ShowIncorrectCharacters.ToString().ToLower()})",
+                    SubTitle = _context.API.GetTranslation("flowTyperParamsShowIncorrectCharactersSubtitle"),
                     Action = (ActionContext _) => {
                         _config.ShowIncorrectCharacters ^= true;
                         saveConfig();
@@ -68,9 +86,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                     Title = $"{_context.API.GetTranslation("flowTyperParamsCapitalizeRateTitle")} ({_config.CapitalizeRate})",
                     SubTitle = _context.API.GetTranslation("flowTyperParamsCapitalizeRateSubtitle"),
                     Action = (ActionContext _) => {
-                        ResetQuery(query);
-                        changeFloatCallback = floatFieldHandlers[FloatField.CAPITALIZE_RATE];
-                        state = FlowTyperState.SETTINGS_FLOAT_EDIT;
+                        SetSettingsEditState(query, FloatField.CAPITALIZE_RATE);
                         return false;
                     }
                 });
@@ -79,18 +95,23 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 #region Punctuation
                 genericSettings.Add(new TyperResult() {
                     Title = $"{_context.API.GetTranslation("flowTyperParamsPunctuationTitle")} ({_config.PunctuationRate})",
-                    SubTitle = "The rate at which punctuation is added to a word.",
+                    SubTitle = _context.API.GetTranslation("flowTyperParamsPunctuationSubtitle"),
                     Action = (ActionContext _) => {
-                        // TODO: HOW TO IMPLEMENT? (SEE Capitalise Rate)
-                        saveConfig();
-                        ResetQuery(query);
+                        SetSettingsEditState(query, FloatField.PUNCTUATION_RATE);
                         return false;
                     }
                 });
                 #endregion
 
                 #region Numbers
-                // - NumbersRate
+                genericSettings.Add(new TyperResult() {
+                    Title = $"{_context.API.GetTranslation("flowTyperParamsNumbersTitle")} ({_config.NumbersRate})",
+                    SubTitle = _context.API.GetTranslation("flowTyperParamsNumbersSubtitle"),
+                    Action = (ActionContext _) => {
+                        SetSettingsEditState(query, FloatField.NUMBERS_RATE);
+                        return false;
+                    }
+                });
                 #endregion
 
                 foreach (Result result in genericSettings) {
