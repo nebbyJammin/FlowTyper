@@ -50,14 +50,30 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 break;
             }
             _context.API.SaveSettingJsonStorage<TypingConfig>();
+            _typingManager.PopulateWordQueue(); // Populate the word queue after any change
         }
+
+        private float getParam(FloatField f) {
+            switch (f) {
+                case FloatField.CAPITALIZE_RATE:
+                    return _config.CapitalizeRate;
+                case FloatField.PUNCTUATION_RATE:
+                    return _config.PunctuationRate;
+                case FloatField.NUMBERS_RATE:
+                    return _config.NumbersRate;
+                default:
+                    // TODO: This is probably bad
+                    return -1;
+            }
+        }
+
         FloatField currFloatField = FloatField.NONE;
         private List<Result> HandleFloatEditQuery(Query query) {
             Tuple<string, string> translationKey = floatFieldTranslationKeys[currFloatField];
 
             List<Result> results = new List<Result>() {
                 new TyperResult() {
-                    Title = $"{_context.API.GetTranslation(translationKey.Item1)} {_config.CapitalizeRate}",
+                    Title = $"{_context.API.GetTranslation(translationKey.Item1)} {getParam(currFloatField)}",
                     SubTitle = query.Search,
                     Action = (ActionContext _) => {
                         try {
@@ -69,10 +85,6 @@ namespace Flow.Launcher.Plugin.FlowTyper {
 
                             string s = query.Search;
                             float val = float.Parse(s);
-
-                            // TODO: Handle an error better. Shouldn't be an issue most the time though.
-                            // Func<float, bool> callback = floatFieldHandlers[currFloatField];
-                            // bool success = callback.Invoke(val);
 
                             updateParam(currFloatField, val);
 

@@ -61,7 +61,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public double Accuracy {get; private set;}
         public int WordsTyped {get; private set;}
         public int CorrectCharacters {get; private set;}
-        public int CharactersTyped {get; private set;}
+        public int TotalCharacters {get; private set;}
         public DateTime TestStart {get; private set;}
         public DateTime LastTimeToType {get; private set;}
         public bool ForceResetTestStartTime {get; private set;}
@@ -99,7 +99,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         
         public void UpdateStatistics(int charsTyped = 0, int correctChars = 0) {
             CorrectCharacters += correctChars;
-            CharactersTyped += charsTyped;
+            TotalCharacters += charsTyped;
 
             TimeSpan span = DateTime.Now - TestStart;
             TimeSpan lastTypeSpan = DateTime.Now - LastTimeToType;
@@ -108,23 +108,23 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
                 TestStart = DateTime.Now;
                 ForceResetTestStartTime = false;
                 CorrectCharacters = 0;
-                CharactersTyped = 0;
+                TotalCharacters = 0;
             }
 
             if (span.TotalMinutes > 0) {
                 WPM = CorrectCharacters / 5.0 / span.TotalMinutes;
-                RawWPM = CharactersTyped / 5.0 / span.TotalMinutes;
+                RawWPM = TotalCharacters / 5.0 / span.TotalMinutes;
             }
 
-            if (CharactersTyped > 0) {
-                Accuracy = (double) CorrectCharacters / CharactersTyped * 100;
+            if (TotalCharacters > 0) {
+                Accuracy = (double) CorrectCharacters / TotalCharacters * 100;
             }
         }
 
         public void EndTest() {
             ForceResetTestStartTime = true;
             CorrectCharacters = 0;
-            CharactersTyped = 0;
+            TotalCharacters = 0;
             WordsTyped = 0;
             WPM = 0;
             RawWPM = 0;
@@ -146,7 +146,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             }
             // Space character counts as a character, so 1 more than the number of correct chars.
             WordsTyped++;
-            UpdateStatistics(userInputtedWord.Length + 1, numCorrect + 1);
+            UpdateStatistics(currentWord.Length + 1, numCorrect + 1);
             dequeueWord();
         }
 
@@ -157,13 +157,38 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
 
         private void enqueueRandomWord() {
             // First check if the next word is a number or a "word"
-            if (random.NextDouble() <= _conf.NumbersRate) {
+            if (random.NextDouble() < _conf.NumbersRate) {
                 int randNum = random.Next(1000);
                 wordQueue.Enqueue(randNum.ToString());
             } else {
-                // Check if we should do any punctuation
                 int max = WordsList.words.Length;
                 string word = WordsList.words[random.Next(max)];
+
+                // Randomize capitalization rate
+                if (random.NextDouble() < _conf.CapitalizeRate) {
+                    word = char.ToUpper(word[0]) + word.Substring(1);
+                }
+
+                // Randomize punctuation rate
+                if (random.NextDouble() < _conf.PunctuationRate) {
+                    // TODO: Have better punctuation randomization
+                    double puncRand = random.NextDouble();
+                    if (puncRand < 0.1) {
+                        word = $"\"{word}\"";
+                    } else if (puncRand < 0.4) {
+                        word = $"{word}.";
+                    } else if (puncRand < 0.6) {
+                        word = $"{word},";
+                    } else if (puncRand < 0.8) {
+                        word = $"{word}?";
+                    } else if (puncRand < 0.9) {
+                        word = $"{word}!";
+                    } else if (puncRand < 0.95) {
+                        word = $"{word}*";
+                    } else {
+                        word = $"{word}...";
+                    }
+                }
 
                 wordQueue.Enqueue(word);
             }

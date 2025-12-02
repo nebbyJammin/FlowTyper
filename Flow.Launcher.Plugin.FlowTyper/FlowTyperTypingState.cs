@@ -40,6 +40,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
             {
                 state = FlowTyperState.MAIN;
                 _typingManager.EndTest();
+                _typingManager.PopulateWordQueue();
                 ResetQuery(query);
 
                 return false;
@@ -74,13 +75,13 @@ namespace Flow.Launcher.Plugin.FlowTyper {
             results.Add(accuracy);
 
             Result charsTyped = new TyperResult() {
-                Title = $"{_context.API.GetTranslation("flowTyperTypingCharactersTyped")}: {_typingManager.CorrectCharacters}/{_typingManager.CharactersTyped}",
+                Title = $"{_context.API.GetTranslation("flowTyperTypingCharactersTyped")}: {_typingManager.CorrectCharacters}/{_typingManager.TotalCharacters}",
                 Score = int.MinValue,
             };
             results.Add(charsTyped);
 
             Result wordsTyped = new TyperResult() {
-                Title = $"{_context.API.GetTranslation("flowTyperTypingWordsTyped")}: {_typingManager.WordsTyped} ({_typingManager.CharactersTyped / 5f})",
+                Title = $"{_context.API.GetTranslation("flowTyperTypingWordsTyped")}: {_typingManager.WordsTyped} ({_typingManager.TotalCharacters / 5f})",
                 Score = int.MinValue,
             };
             results.Add(wordsTyped);

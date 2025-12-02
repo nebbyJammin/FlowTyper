@@ -26,7 +26,6 @@ namespace Flow.Launcher.Plugin.FlowTyper {
             {
                 state = FlowTyperState.TYPING;
                 ResetQuery(query, whitespace: TEST_WHITESPACE_PADDING + 1);
-                _typingManager.PopulateWordQueue();
 
                 return false;
             };
