@@ -1,0 +1,51 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Get Version
+        id: version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'Flow.Launcher.Plugin.FlowTyper\plugin.json'
+          prop_path: "Version"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Setup filename
+        id: filename
+        run: echo "PACKAGE_NAME=Flow.Launcher.Plugin.FlowTyper-${{steps.version.outputs.prop}}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Package
+        run: |
+          dotnet publish -c Release -r win-x64 --no-self-contained Flow.Launcher.Plugin.FlowTyper/Flow.Launcher.Plugin.FlowTyper.csproj
+          7z a -tzip "${{steps.filename.outputs.PACKAGE_NAME}}.zip" "./Flow.Launcher.Plugin.FlowTrumpet/bin/Release/win-x64/publish/*"
+
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{steps.filename.outputs.PACKAGE_NAME}}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
