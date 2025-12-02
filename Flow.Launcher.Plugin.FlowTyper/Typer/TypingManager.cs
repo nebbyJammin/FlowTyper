@@ -146,7 +146,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             }
             // Space character counts as a character, so 1 more than the number of correct chars.
             WordsTyped++;
-            UpdateStatistics(currentWord.Length + 1, numCorrect + 1);
+            UpdateStatistics(currentWord.Length + 1, numCorrect == currentWord.Length ? numCorrect + 1 : numCorrect);
             dequeueWord();
         }
 
