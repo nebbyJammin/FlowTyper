@@ -2,7 +2,7 @@
     "ID": "27D72EBFE7E247958CBC707A7CB504C0",
     "ActionKeyword": "ft",
     "Name": "FlowTyper",
-    "Description": "Typing tests built into flow launcher",
+    "Description": "Quick and simple typing tests built into flow launcher",
     "Author": "nebbyJammin",
     "Version": "1.0.0",
     "Language": "csharp",
