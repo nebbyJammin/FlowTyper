@@ -34,7 +34,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 typingTest.Title = new string(' ', TEST_WHITESPACE_PADDING)
                                 + _typingManager.CurrentWordsString;
             }
-            typingTest.SubTitle = _context.API.GetTranslation("flowTyperExitTestMode");
+            typingTest.SubTitle = _context.API.GetTranslation("flowTyperTypingExitTestMode");
              
             typingTest.Action = (ActionContext context) =>
             {
@@ -45,22 +45,52 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 return false;
             };
 
+            results.Add(new TyperResult() {
+                Title = $"{_context.API.GetTranslation("flowTyperTypingResetTestTitle")}",
+                SubTitle = $"{_context.API.GetTranslation("flowTyperTypingResetTestTitle")}",
+                Score = int.MinValue,
+                Action = (ActionContext _) => {
+                    _typingManager.EndTest();
+                    _typingManager.PopulateWordQueue();
+                    ResetQuery(query, whitespace: TEST_WHITESPACE_PADDING + 1);
+
+                    return false;
+                }
+            });
+
             results.Add(typingTest);
 
             Result wpm = new TyperResult() {
-                Title = $"WPM: {_typingManager.WPM:0.}",
-                SubTitle = $"Raw WPM: {_typingManager.RawWPM:0.}",
+                Title = $"{_context.API.GetTranslation("flowTyperTypingWPM")}: {_typingManager.WPM:0.}",
+                SubTitle = $"{_context.API.GetTranslation("flowTyperTypingRawWPM")}: {_typingManager.RawWPM:0.}",
                 Score = int.MinValue,
             };
-
             results.Add(wpm);
 
             Result accuracy = new TyperResult() {
-                Title = $"Accuracy: {_typingManager.Accuracy:0.##}%",
+                Title = $"{_context.API.GetTranslation("flowTyperTypingAccuracy")}: {_typingManager.Accuracy:0.##}%",
                 Score = int.MinValue,
             };
-
             results.Add(accuracy);
+
+            Result charsTyped = new TyperResult() {
+                Title = $"{_context.API.GetTranslation("flowTyperTypingCharactersTyped")}: {_typingManager.CorrectCharacters}/{_typingManager.CharactersTyped}",
+                Score = int.MinValue,
+            };
+            results.Add(charsTyped);
+
+            Result wordsTyped = new TyperResult() {
+                Title = $"{_context.API.GetTranslation("flowTyperTypingWordsTyped")}: {_typingManager.WordsTyped} ({_typingManager.CharactersTyped / 5f})",
+                Score = int.MinValue,
+            };
+            results.Add(wordsTyped);
+            
+            int testTime = _typingManager.TestStart != DateTimeOffset.UnixEpoch ? (int)(DateTime.Now - _typingManager.TestStart).TotalSeconds : 0;
+            Result testLength = new TyperResult() {
+                Title = $"{_context.API.GetTranslation("flowTyperTypingTestTime")}: {testTime}",
+                Score = int.MinValue,
+            };
+            results.Add(testLength);
 
             previousTypingQuery = searchTerms.Length >= 1 ? searchTerms[searchTerms.Length - 1] : "";
 

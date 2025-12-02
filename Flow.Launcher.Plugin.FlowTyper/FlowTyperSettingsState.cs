@@ -15,7 +15,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
             state = FlowTyperState.SETTINGS_INT_EDIT;
         }
 
-        public List<Result> HandleSettingsQuery(Query query) {
+        private List<Result> HandleSettingsQuery(Query query) {
             List<Result> results = new List<Result>();
             List<Result> genericSettings = new List<Result>();
 
@@ -33,7 +33,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 if ("language".StartsWith(searchTerms[0])) {
                     hideGenericSettings = true;
                     // Show language options
-                    string[] wordlists = _typingManager.listOfWordsLists.wordlists;
+                    string[] wordlists = _typingManager.listOfWordsList.wordlists;
                     for (int i = 0; i < wordlists.Length; i++) {
                         if (searchTerms.Length == 1 || searchTerms.Length == 2 && wordlists[i].StartsWith(searchTerms[1])) {
                             string word = wordlists[i];

@@ -9,8 +9,6 @@
     <system:String x:Key="flowTyperChangeTestTitle">type</system:String>
     <system:String x:Key="flowTyperChangeTestSubtitle">Start typing test</system:String>
 
-    <system:String x:Key="flowTyperExitTestMode">Press Enter to exit typing test</system:String>
-
     <system:String x:Key="flowTyperReturnToMainTitle">main</system:String>
     <system:String x:Key="flowTyperReturnToMainSubtitle">Return to Main</system:String>
 
@@ -31,5 +29,15 @@
     <system:String x:Key="flowTyperParamsEditCapitalizeRateTitle">Enter a capitalization rate (0-1), current value is:</system:String>
     <system:String x:Key="flowTyperParamsEditPunctuationRateTitle">Enter a punctuation rate (0-1), current value is:</system:String>
     <system:String x:Key="flowTyperParamsEditNumbersRateTitle">Enter a numbers rate (0-1), current value is:</system:String>
+
+    <system:String x:Key="flowTyperTypingExitTestMode">Press Enter to exit typing test</system:String>
+    <system:String x:Key="flowTyperTypingResetTestTitle">Reset Test</system:String>
+    <system:String x:Key="flowTyperTypingResetTestSubtitle">Press enter here to reset the test</system:String>
+    <system:String x:Key="flowTyperTypingWPM">WPM</system:String>
+    <system:String x:Key="flowTyperTypingRawWPM">Raw WPM</system:String>
+    <system:String x:Key="flowTyperTypingAccuracy">Accuracy</system:String>
+    <system:String x:Key="flowTyperTypingCharactersTyped">Characters Typed</system:String>
+    <system:String x:Key="flowTyperTypingWordsTyped">Words Typed</system:String>
+    <system:String x:Key="flowTyperTypingTestTime">Test Time</system:String>
 
 </ResourceDictionary>

@@ -29,9 +29,21 @@ namespace Flow.Launcher.Plugin.FlowTyper
             /// The state that represents when the program is in a typing test
             /// </summary>
             TYPING,
+            /// <summary>
+            /// The state that represents when the program is browsing the list of settings
+            /// </summary>
             SETTINGS,
+            /// <summary>
+            /// The state that represents when the program is prompting the user to edit an integer config parameter
+            /// </summary>
             SETTINGS_INT_EDIT,
+            /// <summary>
+            /// The state that represents when the program is prompting the user to edit an float config parameter
+            /// </summary>
             SETTINGS_FLOAT_EDIT,
+            /// <summary>
+            /// The bad, error state
+            /// </summary>
             ERROR
         }
         private FlowTyperState state = FlowTyperState.MAIN;
@@ -124,11 +136,17 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
             return results;
         }
+        /// <summary>
+        /// Provides translated plugin title as per flow launcher API
+        /// </summary>
         public string GetTranslatedPluginTitle()
         {
             return _context.API.GetTranslation("flowTyperTitle");
         }
 
+        /// <summary>
+        /// Provides translated plugin description as per flow launcher API
+        /// </summary>
         public string GetTranslatedPluginDescription()
         {
             return _context.API.GetTranslation("flowTyperDescription");

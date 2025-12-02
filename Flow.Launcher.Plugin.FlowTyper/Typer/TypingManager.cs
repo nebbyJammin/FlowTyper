@@ -53,15 +53,16 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         }
         private Random random = new Random();
         public WordList WordsList {get; private set;}
-        public WordLists listOfWordsLists {get; init; }
+        public WordLists listOfWordsList {get; init; }
         public double WPM {get; private set;}
         public double RawWPM {get; private set;}
         public double Accuracy {get; private set;}
+        public int WordsTyped {get; private set;}
         public int CorrectCharacters {get; private set;}
         public int CharactersTyped {get; private set;}
-        public DateTime TestStart {get; set;}
-        public DateTime LastTimeToType {get; set;}
-        public bool ForceResetTestStartTime {get; set;}
+        public DateTime TestStart {get; private set;}
+        public DateTime LastTimeToType {get; private set;}
+        public bool ForceResetTestStartTime {get; private set;}
         public string ActiveWordListName {get; private set;}
         public TypingManager(string language = "english") {
             this.ActiveWordListName = language;
@@ -71,13 +72,13 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             {
                 string Json = reader.ReadToEnd();
 
-                listOfWordsLists = JsonSerializer.Deserialize<WordLists>(Json);
+                listOfWordsList = JsonSerializer.Deserialize<WordLists>(Json);
             }
 
 
-            TestStart = DateTime.Now; 
+            TestStart = DateTime.UnixEpoch; 
 
-            random = new Random();
+            random = new Random((int)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             LoadWordList();
         }
 
@@ -118,6 +119,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             ForceResetTestStartTime = true;
             CorrectCharacters = 0;
             CharactersTyped = 0;
+            WordsTyped = 0;
             WPM = 0;
             RawWPM = 0;
         }
@@ -137,6 +139,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
                 }
             }
             // Space character counts as a character, so 1 more than the number of correct chars.
+            WordsTyped++;
             UpdateStatistics(userInputtedWord.Length + 1, numCorrect + 1);
             dequeueWord();
         }
@@ -153,7 +156,8 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             wordQueue.Enqueue(word);
         }
 
-        private void populateWordQueue() {
+        public void PopulateWordQueue() {
+            wordQueue.Clear();
             for (int i = 0; i < WORD_QUEUE_LENGTH; i++) {
                 enqueueRandomWord();
             }
@@ -170,7 +174,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
 
             wordQueue = new Queue<string>();
 
-            populateWordQueue();
+            PopulateWordQueue();
 
             return true;
         }

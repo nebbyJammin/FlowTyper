@@ -35,7 +35,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
         }
 
 
-        public List<Result> HandleMainQuery(Query query) {
+        private List<Result> HandleMainQuery(Query query) {
             List<Result> results = new List<Result>();      
 
             Result testMode = GetTestModeResult(query);
