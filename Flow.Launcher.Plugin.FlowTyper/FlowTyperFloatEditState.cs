@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using Flow.Launcher.Plugin.FlowTyper.Typer;
 using Flow.Launcher.Plugin.FlowTyper.Utils;
 
 namespace Flow.Launcher.Plugin.FlowTyper {
@@ -48,7 +49,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 _config.NumbersRate = Math.Clamp(val, 0, 1);
                 break;
             }
-            _config.SaveConfig();
+            _context.API.SaveSettingJsonStorage<TypingConfig>();
         }
         FloatField currFloatField = FloatField.NONE;
         private List<Result> HandleFloatEditQuery(Query query) {

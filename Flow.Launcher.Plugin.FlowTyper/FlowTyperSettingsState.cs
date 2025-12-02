@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Flow.Launcher.Plugin.FlowTyper.Typer;
 using Flow.Launcher.Plugin.FlowTyper.Utils;
 
 namespace Flow.Launcher.Plugin.FlowTyper {
@@ -64,7 +65,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                     SubTitle = _context.API.GetTranslation("flowTyperParamsShowIncorrectCharactersSubtitle"),
                     Action = (ActionContext _) => {
                         _config.ShowIncorrectCharacters ^= true;
-                        saveConfig();
+                        _context.API.SaveSettingJsonStorage<TypingConfig>();
                         ResetQuery(query);
 
                         return false;

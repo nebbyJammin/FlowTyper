@@ -9,9 +9,10 @@ using System.Windows.Media.Effects;
 
 namespace Flow.Launcher.Plugin.FlowTyper.Typer {
     public class TypingManager {
+        private PluginInitContext _context;
         public TypingConfig _conf {get; private set;}
-        private static readonly string WORDLIST_PATH = Constants.PLUGIN_DIR + @"Static\Wordlists\";
-        private static readonly string LIST_OF_WORDLISTS_PATH = WORDLIST_PATH + @"_wordlists.json";
+        private readonly string WORDLIST_PATH;
+        private readonly string LIST_OF_WORDLISTS_PATH;
         private const int WORD_QUEUE_LENGTH = 40;
         private const double TEST_TIMEOUT_LENGTH = 5;
         private Queue<string> wordQueue;
@@ -64,8 +65,12 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
         public DateTime TestStart {get; private set;}
         public DateTime LastTimeToType {get; private set;}
         public bool ForceResetTestStartTime {get; private set;}
-        public TypingManager(TypingConfig conf) {
-            this._conf = conf;
+        public TypingManager(PluginInitContext context) {
+            this._context = context;
+            this._conf = _context.API.LoadSettingJsonStorage<TypingConfig>();
+
+            this.WORDLIST_PATH = Path.Combine(_context.CurrentPluginMetadata.PluginDirectory, "Static\\", "Wordlists\\");
+            this.LIST_OF_WORDLISTS_PATH = Path.Combine(WORDLIST_PATH, "_wordlists.json");
 
             FileStream file = new FileStream(LIST_OF_WORDLISTS_PATH, FileMode.Open);
             using (StreamReader reader = new StreamReader(file))
@@ -84,7 +89,7 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
 
         public void SetActiveWordList(string wordList) {
             _conf.Language = wordList;
-            _conf.SaveConfig();
+            _context.API.SaveSettingJsonStorage<TypingConfig>();
             LoadWordList();
         }
 

@@ -49,41 +49,5 @@ namespace Flow.Launcher.Plugin.FlowTyper.Typer {
             set { _capitalizeRate = value; }
         }
         #endregion
-
-        public Exception SaveConfig() {
-            if (!Directory.Exists(Constants.CONFIG_DIR)) {
-                Directory.CreateDirectory(Constants.CONFIG_DIR);
-            }
-
-            string path = Path.Combine(Constants.CONFIG_DIR, ".config.json");
-            string json = JsonSerializer.Serialize(this);
-            File.WriteAllText(path, json);
-
-            return null;
-        }
-
-        public static TypingConfig LoadConfig() {
-            string path = Path.Combine(Constants.CONFIG_DIR, ".config.json");
-            if (File.Exists(path)) {
-                
-                FileStream configFile = new FileStream(path, FileMode.Open);
-
-                using (StreamReader reader = new StreamReader(configFile))
-                {
-                    string json = reader.ReadToEnd();
-
-                    return JsonSerializer.Deserialize<TypingConfig>(json);
-                }
-
-            }
-            else {
-                // If FileNotFound, create the file
-                TypingConfig conf = new();
-                conf.SaveConfig();
-
-                return conf;
-            }
-
-        }
     }
 }

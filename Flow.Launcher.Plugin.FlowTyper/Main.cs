@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using Flow.Launcher.Plugin.FlowTyper.Typer;
 using Flow.Launcher.Plugin.FlowTyper.Utils;
 
@@ -51,27 +52,11 @@ namespace Flow.Launcher.Plugin.FlowTyper
         private string previousTypingQuery = "";
         private Exception exception;
 
-        private void saveConfig() {
-            _typingManager._conf.SaveConfig();
-        }
-
         void IPlugin.Init(PluginInitContext context)
         {
             _context = context;
-            TypingConfig conf = null;
-            try {
-                conf = TypingConfig.LoadConfig();
-            } catch (Exception e) {
-                exception = e;
-            }
-
-            if(conf == null) {
-                state = FlowTyperState.ERROR;
-            }
-            else {
-                state = FlowTyperState.MAIN;
-                _typingManager = new TypingManager(conf);
-            }
+            state = FlowTyperState.MAIN;
+            _typingManager = new TypingManager(_context);
         }
 
         List<Result> IPlugin.Query(Query query)
@@ -154,6 +139,5 @@ namespace Flow.Launcher.Plugin.FlowTyper
 
             return returnMainResult;
         }
-
     }
 }
