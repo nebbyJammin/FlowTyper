@@ -10,7 +10,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
         private List<Result> HandleIntEditQuery(Query query) {
             List<Result> results = new List<Result>() {
                 new TyperResult() {
-                    Title = $"Test capitalise Rate enter value, current is {_config.CapitaliseRate}",
+                    Title = $"Test capitalise Rate enter value, current is {_config.CapitalizeRate}",
                     SubTitle = query.Search,
                     Action = (ActionContext _) => {
                         try {

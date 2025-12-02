@@ -27,7 +27,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                             string word = wordlists[i];
                             results.Add(new TyperResult() {
                                 Title = $"language {wordlists[i]}",
-                                SubTitle = $"Current language is {_config.Language}",
+                                SubTitle = $"Current language: {_config.Language}",
                                 Action = (ActionContext actionContext) => {
                                     _config.Language = word;
                                     saveConfig();
@@ -55,8 +55,8 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                     }
                 });
                 genericSettings.Add(new TyperResult() {
-                    Title = "language <language>",
-                    SubTitle = $"Specify the typing language ({_config.Language}).",
+                    Title = $"{_context.API.GetTranslation("flowTyperParamsLanguageTitle")} ({_config.Language})",
+                    SubTitle = _context.API.GetTranslation("flowTyperParamsLanguageSubtitle"),
                     Action = (ActionContext _) => {
                         ResetQuery(query, "language ");
                         return false;
@@ -65,21 +65,11 @@ namespace Flow.Launcher.Plugin.FlowTyper {
 
                 #region Capitalise
                 genericSettings.Add(new TyperResult() {
-                    Title = $"capitalise ({_config.Capitalise.ToString().ToLower()})",
-                    SubTitle = "Capitalise words at a random rate (See CapitaliseRate).",
-                    Action = (ActionContext _) => {
-                        _config.Capitalise ^= true;
-                        saveConfig();
-                        ResetQuery(query);
-                        return false;
-                    }
-                });
-                genericSettings.Add(new TyperResult() {
-                    Title = $"capitaliseRate ({_config.CapitaliseRate})",
-                    SubTitle = "The rate at which words are capitalised.",
+                    Title = $"{_context.API.GetTranslation("flowTyperParamsCapitalizeRateTitle")} ({_config.CapitalizeRate})",
+                    SubTitle = _context.API.GetTranslation("flowTyperParamsCapitalizeRateSubtitle"),
                     Action = (ActionContext _) => {
                         ResetQuery(query);
-                        changeFloatCallback = floatFieldHandlers["capitaliseRate"];
+                        changeFloatCallback = floatFieldHandlers[FloatField.CAPITALIZE_RATE];
                         state = FlowTyperState.SETTINGS_FLOAT_EDIT;
                         return false;
                     }
@@ -88,17 +78,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
 
                 #region Punctuation
                 genericSettings.Add(new TyperResult() {
-                    Title = $"punctuation ({_config.Punctuation.ToString().ToLower()})",
-                    SubTitle = "Randomly adds punctuation to a word (See PunctuationRate)",
-                    Action = (ActionContext _) => {
-                        _config.Punctuation ^= true;
-                        saveConfig();
-                        ResetQuery(query);
-                        return false;
-                    }
-                });
-                genericSettings.Add(new TyperResult() {
-                    Title = $"punctuationRate ({_config.PunctuationRate})",
+                    Title = $"{_context.API.GetTranslation("flowTyperParamsPunctuationTitle")} ({_config.PunctuationRate})",
                     SubTitle = "The rate at which punctuation is added to a word.",
                     Action = (ActionContext _) => {
                         // TODO: HOW TO IMPLEMENT? (SEE Capitalise Rate)
@@ -110,10 +90,6 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                 #endregion
 
                 #region Numbers
-                //TODO: ADD:
-                // - Numbers
-                // - NumbersMin
-                // - NumbersMax
                 // - NumbersRate
                 #endregion
 

@@ -5,12 +5,23 @@
     <!--  Startup  -->
     <system:String x:Key="flowTyperTitle">Flow Typer</system:String>
     <system:String x:Key="flowTyperDescription">Typing tests built into flow launcher</system:String>
+
     <system:String x:Key="flowTyperChangeTestTitle">type</system:String>
     <system:String x:Key="flowTyperChangeTestSubtitle">Start typing test</system:String>
+
     <system:String x:Key="flowTyperExitTestMode">Press Enter to exit typing test</system:String>
+
     <system:String x:Key="flowTyperReturnToMainTitle">main</system:String>
     <system:String x:Key="flowTyperReturnToMainSubtitle">Return to Main</system:String>
+
     <system:String x:Key="flowTyperSettingsTitle">settings</system:String>
     <system:String x:Key="flowTyperSettingsSubtitle">Edit Flow Typer Settings</system:String>
+
+    <system:String x:Key="flowTyperParamsCapitalizeRateTitle">capitalization</system:String>
+    <system:String x:Key="flowTyperParamsCapitalizeRateSubtitle">The rate at which words are capitalised. (0=none, 1=all)</system:String>
+    <system:String x:Key="flowTyperParamsPunctuationTitle">punctuation</system:String>
+    <system:String x:Key="flowTyperParamsPunctuationSubtitle">The rate at which punctuation is added to a word. (0=none, 1=all)</system:String>
+    <system:String x:Key="flowTyperParamsLanguageTitle">language &lt;language&gt;</system:String>
+    <system:String x:Key="flowTyperParamsLanguageSubtitle">Specify the word list to choose from.</system:String>
 
 </ResourceDictionary>

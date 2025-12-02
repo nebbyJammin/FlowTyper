@@ -5,9 +5,12 @@ using Flow.Launcher.Plugin.FlowTyper.Utils;
 
 namespace Flow.Launcher.Plugin.FlowTyper {
     public partial class FlowTyper {
-        Dictionary<string, Func<float, bool>> floatFieldHandlers = new Dictionary<string, Func<float, bool>>() {
-            { "capitaliseRate", (float val) => {
-                _config.CapitaliseRate = val;
+        enum FloatField {
+            CAPITALIZE_RATE
+        }
+        Dictionary<FloatField, Func<float, bool>> floatFieldHandlers = new Dictionary<FloatField, Func<float, bool>>() {
+            { FloatField.CAPITALIZE_RATE, (float val) => {
+                _config.CapitalizeRate = val;
                 saveConfig();
                 return true;
             }}
@@ -16,7 +19,7 @@ namespace Flow.Launcher.Plugin.FlowTyper {
         private List<Result> HandleFloatEditQuery(Query query) {
             List<Result> results = new List<Result>() {
                 new TyperResult() {
-                    Title = $"Test capitalise Rate enter value, current is {_config.CapitaliseRate}",
+                    Title = $"Test capitalise Rate enter value, current is {_config.CapitalizeRate}",
                     SubTitle = query.Search,
                     Action = (ActionContext _) => {
                         try {
@@ -26,8 +29,8 @@ namespace Flow.Launcher.Plugin.FlowTyper {
                             ResetQuery(query);
                             state = FlowTyperState.SETTINGS;
                         }
-                        catch (Exception e) {
-                            
+                        catch (Exception) {
+                            // Silently fail
                         }
 
                         return false;

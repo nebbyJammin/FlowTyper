@@ -20,18 +20,8 @@ In main mode, to change settings, use `ft settings`. Alternatively, you can edit
 
 `Language` - Specifies the language / word list to use.
 
-`Punctuation` - `[true|false]` Randomly adds punctuation to a word.
-
 `PunctuationRate` - `[0-1]` Specifies the proportion of words with punctuation.
 
-`Numbers` - `[true|false]` Randomly adds numbers.
-
-`NumbersMin` - `[int]` Smallest Number.
-
-`NumbersMax` - `[int]` Largest Number.
-
 `NumbersRate` - `[0-1]` Specifies the proportion of words that are numbers.
-
-`Capitalise` - `[true|false]` Randomly capitalises words.
 
 `CapitaliseRate` - `[0-1]` Specifies the proportion of words whose first letter is Capitalised.
