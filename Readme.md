@@ -24,10 +24,10 @@ In main mode, to start a typing test `ft type`<br>
 
 To return to main mode from typing mode, __press enter on the first result__<br>
 
-In main mode, to change settings, use `ft settings`. Alternatively, you can edit the __.config__ file, located in __*%APPDATA%\\FlowLauncher\\Plugins\\FlowTyper\\.config\\.config.json*__ by default. This is not recommended. If you have modifying the configuration file results in Flow Typer not loading anymore (and you're not sure why), delete the configuration file. Flow Typer will create a new default configuration upon the next restart.
+In main mode, to change settings, use `ft settings`. Alternatively, you can edit the __.config__ file, located in __*%APPDATA%\\FlowLauncher\\Plugins\\FlowTyper\\.config\\.config.json*__ by default. This is not recommended. If you have modified the configuration file, and that has stopped Flow Typer / Flow Launcher from loading, delete the configuration file. Flow Typer will create a new default configuration upon the next restart.
 
 #### Settings and Configuration
-> In the `.config` configuration file, parameters are PascalCase. In `ft settings <arg>` they are camelCase.
+> These settings correspond one-to-one with the JSON configuration in camelCase, but depending on localization, may vary within Flow Launcher / Flow Typer.
 
 `ShowIncorrectCharacters` - `[true|false]` When incorrect characters are typed, overwrite the visible word list with the incorrectly typed character(s).
 
@@ -37,4 +37,4 @@ In main mode, to change settings, use `ft settings`. Alternatively, you can edit
 
 `NumbersRate` - `[0-1]` Specifies the proportion of words that are numbers.
 
-`CapitaliseRate` - `[0-1]` Specifies the proportion of words whose first letter is Capitalised.
+`CapitalizeRate` - `[0-1]` Specifies the proportion of words whose first letter is Capitalised.
