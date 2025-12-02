@@ -43,7 +43,7 @@ jobs:
       - name: Publish
         run: |
           dotnet publish -c Release -r win-x64 --no-self-contained Flow.Launcher.Plugin.FlowTyper/Flow.Launcher.Plugin.FlowTyper.csproj
-          7z a -tzip "${{steps.filename.outputs.PACKAGE_NAME}}.zip" "./Flow.Launcher.Plugin.FlowTrumpet/bin/Release/win-x64/publish/*"
+          7z a -tzip "${{steps.filename.outputs.PACKAGE_NAME}}.zip" "./Flow.Launcher.Plugin.FlowTyper/bin/Release/win-x64/publish/*"
 
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
