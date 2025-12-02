@@ -1,7 +1,19 @@
 Flow.Launcher.Plugin.FlowTyper
 ==================
 
-A plugin for the [Flow launcher](https://github.com/Flow-Launcher/Flow.Launcher) that adds a typing test, that measures accuracy and typing speed. Languages/WordLists are from [MonkeyType](https://github.com/monkeytypegame/monkeytype), and is overall inspired by MonkeyType.
+A plugin for the [Flow launcher](https://github.com/Flow-Launcher/Flow.Launcher) that adds a simple typing test, that measures accuracy and typing speed. Languages/WordLists are from [MonkeyType](https://github.com/monkeytypegame/monkeytype), and is overall inspired by MonkeyType.
+
+This project includes files derived from the MonkeyType project
+(https://github.com/monkeytypegame/monkeytype), which are licensed under the
+GNU General Public License v3.0.
+
+The MonkeyType-derived files are:
+- Flow.Launcher.Plugin.FlowTyper/Static/Wordlists/...
+These files remain under the GPL-3.0 license and include the required copyright
+and license notices from the original project.
+
+All other files in this project are still licensed under GPL-3.0.
+
 
 ### Usage
 The default action keyword is `ft`. Use `ft <arguments>`.
