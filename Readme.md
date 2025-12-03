@@ -1,7 +1,7 @@
 Flow.Launcher.Plugin.FlowTyper
 ==================
 
-A plugin for the [Flow launcher](https://github.com/Flow-Launcher/Flow.Launcher) that adds a simple typing test, that measures accuracy and typing speed. Languages/WordLists are from [MonkeyType](https://github.com/monkeytypegame/monkeytype), and is overall inspired by MonkeyType.
+A plugin for the [Flow launcher](https://github.com/Flow-Launcher/Flow.Launcher) that adds a simple endless typing test, that measures accuracy and typing speed. Languages/WordLists are from [MonkeyType](https://github.com/monkeytypegame/monkeytype), and is overall inspired by MonkeyType.
 
 This project includes files derived from the MonkeyType project
 (https://github.com/monkeytypegame/monkeytype), which are licensed under the
@@ -14,7 +14,6 @@ These files remain under the GPL-3.0 license and include the required copyright
 and license notices from the original project.
 
 All other files in this project are still licensed under GPL-3.0.
-
 
 ### Usage
 The default action keyword is `ft`. Use `ft <arguments>`.
@@ -33,8 +32,8 @@ In main mode, to change settings, use `ft settings`. Alternatively, you can edit
 
 `Language` - Specifies the language / word list to use.
 
-`PunctuationRate` - `[0-1]` Specifies the proportion of words with punctuation.
-
 `NumbersRate` - `[0-1]` Specifies the proportion of words that are numbers.
 
-`CapitalizeRate` - `[0-1]` Specifies the proportion of words whose first letter is Capitalised.
+`PunctuationRate` - `[0-1]` Specifies the proportion of (non-number) "words" with punctuation attached to them.
+
+`CapitalizeRate` - `[0-1]` Specifies the proportion of (non-number) words whose first letter is capitalized.
