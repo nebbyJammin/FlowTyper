@@ -23,7 +23,7 @@
     <system:String x:Key="flowTyperParamsLanguageSubtitle">Specify the word list to choose from.</system:String>
     <system:String x:Key="flowTyperParamsNumbersTitle">numbers</system:String>
     <system:String x:Key="flowTyperParamsNumbersSubtitle">The rate at which numbers will appear in place of words. (0=none, 1=all)</system:String>
-    <system:String x:Key="flowTyperParamsShowIncorrectCharactersTitle">showIncorrectTitles</system:String>
+    <system:String x:Key="flowTyperParamsShowIncorrectCharactersTitle">showIncorrectCharacters</system:String>
     <system:String x:Key="flowTyperParamsShowIncorrectCharactersSubtitle">When true, mistyped characters overwrite the word list preview</system:String>
 
     <system:String x:Key="flowTyperParamsEditCapitalizeRateTitle">Enter a capitalization rate (0-1), current value is:</system:String>
