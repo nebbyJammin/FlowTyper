@@ -5,7 +5,7 @@
     <AssemblyName>Flow.Launcher.Plugin.FlowTyper</AssemblyName>
     <PackageId>Flow.Launcher.Plugin.FlowTyper</PackageId>
     <Authors>nebbyJammin</Authors>
-    <PackageProjectUrl>https://github.com/nebbyJammin/FlowTyperr</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/nebbyJammin/FlowTyper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nebbyJammin/FlowTyper</RepositoryUrl>
     <PackageTags>flow-launcher flow-plugin</PackageTags>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
